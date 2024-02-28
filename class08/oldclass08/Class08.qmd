@@ -1,0 +1,58 @@
+---
+title: "Class08"
+author: "Chen"
+format: html
+editor: visual
+---
+
+```{r}
+wisc.df <- read.csv("/Users/showwhale/Desktop/HsiaoinMac/HsiaoinMac/UCSD/Freshman/Winter/Bioinformatics/class08/WisconsinCancer.csv", row.names = 1)
+```
+
+
+>Q .H How many obervations/samples/patients/rows?
+
+There are 'r nrow(wisc.df) individuals in this dataset.
+
+```{r}
+nrow(wisc.df)
+```
+
+>Q What is in the '$diagnosis' column? How many of each type?
+
+```{r}
+table(wisc.df$diagnosis)
+sum(wisc.df$diagnosis == "M")
+sum(wisc.df$diagnosis == "B")
+```
+
+
+>Q How many variables/features in the data are suffixed with _mean?
+
+```{r}
+cname <- colnames(wisc.df)
+cname
+cnum <- grep("_mean", cname, value = TRUE)
+length(cnum)
+```
+
+>Q How many variables/features in total?
+
+```{r}
+ncol(wisc.df)
+```
+
+>Q Save the diagonises for later reference
+
+```{r}
+diagonsis <- as.factor(wisc.df$diagnosis)
+```
+
+
+and remove or exclude this colimn from any of our further analysis
+```{r}
+wisc.df <- wisc.df[,-1]
+
+```
+
+

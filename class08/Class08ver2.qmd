@@ -1,0 +1,117 @@
+---
+title: "Class08"
+author: "Chen"
+format: html
+editor: visual
+---
+
+```{r}
+wisc.df <- read.csv("/Users/showwhale/Desktop/HsiaoinMac/HsiaoinMac/UCSD/Freshman/Winter/Bioinformatics/class08/WisconsinCancer.csv", row.names = 1)
+```
+
+
+>Q .H How many obervations/samples/patients/rows?
+
+There are 'r nrow(wisc.df) individuals in this dataset.
+
+```{r}
+nrow(wisc.df)
+```
+
+>Q What is in the '$diagnosis' column? How many of each type?
+
+```{r}
+table(wisc.df$diagnosis)
+sum(wisc.df$diagnosis == "M")
+sum(wisc.df$diagnosis == "B")
+```
+
+
+>Q How many variables/features in the data are suffixed with _mean?
+
+```{r}
+cname <- colnames(wisc.df)
+cname
+cnum <- grep("_mean", cname, value = TRUE)
+length(cnum)
+```
+
+>Q How many variables/features in total?
+
+```{r}
+ncol(wisc.df)
+```
+
+>Q Save the diagonises for later reference
+
+```{r}
+diagonsis <- as.factor(wisc.df$diagnosis)
+```
+
+
+and remove or exclude this colimn from any of our further analysis
+```{r}
+wisc.df <- wisc.df[,-1]
+```
+
+Let's try clustering this data!
+
+```{r}
+wisc.hc <- hclust(dist(wisc.df))
+plot(wisc.hc)
+```
+
+
+#Principal Component Analysis
+
+Let's try PCA on this data. Before doing any anlysis like this we should check if our data is well-scaled. Normalizing these data can standardize the variation
+
+```{r}
+apply(mtcars, 2, mean)
+```
+```{r}
+apply(mtcars, 2, sd)
+```
+
+Let's try a PCA on this car dataset
+
+```{r}
+pc <- prcomp(mtcars)
+summary(pc)
+```
+```{r}
+biplot(pc)
+```
+Do scalling first!
+
+```{r}
+pc.scale <-prcomp(mtcars, scale = TRUE)
+summary(pc.scale)
+biplot(pc.scale)
+```
+
+
+## Back to our cancer data set##
+Do we need to scale this data set? Yes. Because the spread is very different in each variables.
+
+```{r}
+wisc.pr <- prcomp(wisc.df, scale = TRUE)
+summary(wisc.pr)
+biplot(wisc.pr)
+```
+
+
+Our main PC score plot (a.k.a PC plot, PC1 vs PC2, orientation)
+
+```{r}
+attributes(wisc.pr)
+```
+
+We need to build our own plot because wisc.pr is too crowded and non informative.
+
+```{r}
+plot(wisc.pr$x[,1], wisc.pr$x[,2], col = diagonsis)
+```
+
+
+

@@ -1,0 +1,238 @@
+---
+title: "Class07"
+author: "Chen Hsiao(PID=A59026768)"
+format: pdf
+editor: visual
+---
+
+### Machine Learning
+
+# Kmeans clustering
+
+The main function for k-means in "base" R is called 'kmeans()'. Let's first make up some data to see how k-means works and to get at the results.
+
+```{r}
+rnorm(10)
+hist(rnorm(5000, mean=3))
+
+```
+
+Make a wee vector with 60 total points half centered at +3 and another centered \@ -3
+
+```{r}
+tmp <- c(rnorm(30, mean = 3), rnorm(30, mean = -3))
+plot(tmp)
+
+```
+
+```{r}
+x <- cbind(x = tmp, y = rev(tmp) )
+plot(x)
+
+```
+
+In this set of data, we determine two groups, one is around +3 and another is -3. Let's see how kmean clusters this data.
+
+```{r}
+k<-kmeans(x, centers = 2, nstart = 20)
+k
+```
+
+To know what is inside the list.
+
+```{r}
+attributes(k)
+
+k$centers
+```
+
+What is my cluster result?
+
+```{r}
+k$cluster
+```
+
+> Q. Plot your data 'x' showing ur clustering result and center point for each cluster.
+
+```{r}
+library(ggplot2)
+ggplot(data.frame(x), aes(x = tmp, y = y))+
+  geom_point()
+```
+
+```{r}
+plot(x, col=k$cluster)
+points(k$centers, pch = 15, col = "green")
+```
+
+> Q. Run kmeans and clster into 3 group and lot the result.
+
+```{r}
+k4 <- kmeans(x, centers = 4)
+plot(x, col = k4$cluster)
+```
+
+From k=2 to k=3, you'll find out an elbow at 3. This is the
+
+```{r}
+k$tot.withinss
+#k3$tot.withinss
+```
+
+The big limmitation of kmeans is that it imposes a structure on ur data (i.e. a clustering) that you ask for in the first place.
+
+# Hierarchical Clustering
+
+The main function in "base" R for this is called 'hclust()'. It wants a distance matrix as input no the data itself.
+
+We can calculate a distance matrix in lots of different ways but here we will use the 'dist( )' function, which calculate euclidean distance
+
+```{r}
+d <- dist(x, diag = T)
+hc <- hclust(d)
+hc
+
+```
+
+There is a specific plot method
+
+```{r}
+plot(hc)
+abline(h = 9, col = "red")
+
+```
+
+To get the cluster membership vector we need to "cut" the tree at a given height that we pick. The function to do this is called 'cutree()'.
+
+```{r}
+cutree(hc,h = 3)
+plot(x, col = cutree(hc,h = 3))
+```
+
+```{r}
+grps <- cutree(hc, k=3)
+grps
+```
+
+> Q. Plot our data ('x') colored by our hclust result.
+
+```{r}
+plot(x, col = grps)
+```
+
+# UK-food
+
+PCA: create a new vector which describe the variance the most
+
+```{r}
+url <- "https://tinyurl.com/UK-foods"
+x <- read.csv(url)
+#row.names(x) <- x[1]
+```
+
+**Q1.** How many rows and columns are in your new data frame named x? What R functions could you use to answer this questions?
+
+```{r}
+nrow(x)
+ncol(x)
+```
+
+```{r}
+x <- read.csv(url, row.names=1)
+
+```
+
+**Q2.** Which approach to solving the ‘row-names problem’ mentioned above do you prefer and why? Is one approach more robust than another under certain circumstances?
+
+**I prefer the second one because we only need one command line to name the row. Using x\<-x\[,-1\] sometimes may accidently delete the coloumn you want.**
+
+**Q3.** Changing what optional argument in the above barplot() function results in the following plot?
+
+```{r}
+barplot(as.matrix(x), beside=F, col=rainbow(nrow(x)))
+#legend("topright", legend = rownames(x), fill = rainbow(10), title = "Legend")
+```
+
+One useful plot in this case (because we only have 4 countries to look across) is pairing.
+
+**Q5.** Generating all pairwise plots may help somewhat. Can you make sense of the following code and resulting figure? What does it mean if a given point lies on the diagonal for a given plot?
+
+```{r}
+row_colors <- rainbow(10)
+pairs(x, col=row_colors, pch=16)
+
+
+```
+
+**For a given plot, if points lie on the diagonal, it means that the two regions the plot is comparing show similar food preference.**
+
+**Q6.** What is the main differences between N. Ireland and the other countries of the UK in terms of this data-set?
+
+**Fresh_veg is the main differences between N. Ireland and other countries.**
+
+## Enter PCA
+
+The main function to do PCA in "base" R is call 'prcomp()'. It wants our foods as the columns and the countries as the rows. It basically want the transpose of the data we have.
+
+```{r}
+pca <- prcomp(t(x))
+summary(pca)
+```
+
+```{r}
+attributes(pca)
+
+```
+
+```{r}
+pca$x
+pca$rotation
+```
+
+> Q7. Complete the code below to generate a plot of PC1 vs PC2. The second line adds text labels over the data points.
+
+
+```{r}
+plot(pca$x[,1],pca$x[,2], xlab = "67%", ylab = "29%", col = c("orange", "red", "blue", "darkgreen" ))
+text(pca$x[,1], pca$x[,2], colnames(x))
+abline(h=0, col= "gray", lty = 2)
+```
+> Q8. Customize your plot so that the colors of the country names match the colors in our UK and Ireland map and table at start of this document.
+
+
+```{r}
+plot(pca$x[,1],pca$x[,2], xlab = "67%", ylab = "29%", col = c("orange", "red", "blue", "darkgreen" ))
+text(pca$x[,1], pca$x[,2], colnames(x), col = c("orange", "red", "blue", "darkgreen" ) )
+
+```
+
+> Q9: Generate a similar ‘loadings plot’ for PC2. What two food groups feature prominantely and what does PC2 maninly tell us about?
+
+
+```{r}
+barplot( pca$rotation[,2], las=2 )
+```
+
+
+
+# PCA of RNA-seq data
+
+```{r}
+url2 <- "https://tinyurl.com/expression-CSV"
+rna.data <- read.csv(url2, row.names=1)
+head(rna.data)
+```
+
+
+
+> Q10: How many genes and samples are in this data set?
+
+
+```{r}
+nrow(rna.data)
+ncol(rna.data)
+```
+
+
+
+

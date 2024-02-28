@@ -1,0 +1,142 @@
+---
+title: "class06: R Functions"
+author: "Chen(PID=A59026768)"
+date: 01/26/2024
+format: pdf
+editor: visual
+---
+# The first silly function
+All functions in r have three parts, that are:
+
+- a name
+- input arguments (non, one, or more)
+- a body
+
+A function to add two numbers
+
+```{r sillyfunction}
+sillyadd <- function(x, y=1) {
+x + y  
+}
+```
+
+Let me try out this function:
+
+```{r}
+sillyadd(10)
+```
+
+
+# Let's do something more useful 
+
+
+
+
+
+```{r}
+
+student1 <-c(100,100,100,100,100,100,100,90)
+student2 <-c(100, NA, 90, 90, 90, 90, 97, 80)
+
+sst1 <- sort(student2)
+dsst1 <- sst1[-1]
+mean(dsst1)
+```
+```{r}
+student1 <-c(100,100,100,100,100,100,100,90)
+# Find lowst value
+lowest <- which.min(student1)
+lowest
+dstudent <- student1[-lowest]
+dstudent
+mean(dstudent)
+```
+
+```{r}
+student2 <-c(100, NA, 90, 90, 90, 90, 97, 80)
+NaV <- is.na(student2)
+student2[NaV] <- 0
+student2
+lowest <- which.min(student2)
+lowest
+dstudent <- student1[-lowest]
+dstudent
+mean(dstudent)
+
+```
+**Q1.** Write a function grade() to determine an overall grade from a vector of student homework
+assignment scores dropping the lowest single score. If a student misses a homework (i.e. has an
+NA value) this can be used as a score to be potentially dropped. Your final function should be
+adquately explained with code comments and be able to work on an example class gradebook
+such as this one in CSV format: “https://tinyurl.com/gradeinput”
+
+```{r}
+grade <- function(x, drop.lowest=TRUE){
+  x[is.na(x)] <- 0
+  if(drop.lowest){
+    ox <- sort(x)
+    dox <- ox[-1]
+    mdox <- mean(dox)
+  }
+  else {
+    mdox <- mean(x)
+  }
+  mdox
+
+}
+
+```
+
+
+```{r}
+grade (student1)
+```
+
+
+
+
+```{r}
+url <- "https://tinyurl.com/gradeinput"
+gradebook <- read.csv(url, row.names = 1)
+
+```
+
+
+Because gradebook is a data.frame instead of a vector, the function grade() can't work. We can use function apply() to apply grade() to all the dataframe instead of using for/while loop.
+
+
+**Q2.** Using your grade() function and the supplied gradebook, Who is the top scoring student
+overall in the gradebook? [3pts]
+```{r}
+FF<-apply(gradebook, MARGIN = 1, grade)
+F <-which.max(apply(gradebook, MARGIN = 1, grade))
+F
+```
+
+**Q3.** From your analysis of the gradebook, which homework was toughest on students (i.e. obtained
+the lowest scores overall? [2pts]
+
+```{r}
+HW <- apply(gradebook, MARGIN = 2, grade)
+HW
+THW <-which.min(HW)
+THW
+```
+
+
+```{r}
+allhw <- apply(gradebook, MARGIN = 2, grade, drop.lowest=F)
+
+```
+
+**Q4**Optional Extension: From your analysis of the gradebook, which homework was most
+predictive of overall score (i.e. highest correlation with average grade score)? [1pt]
+```{r}
+mask <- gradebook
+mask[is.na(mask)]<-0
+mask$hw5
+mask
+FF
+which.max(cor(mask, FF))
+```
+
