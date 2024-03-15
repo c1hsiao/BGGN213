@@ -7,6 +7,7 @@ editor: visual
 ---
 
 # Graphics systems in R
+
 There are many graphics systems for R. These include so called **"base R"** and those in add-on packages like `ggplot2`.
 
 ```{r}
@@ -14,10 +15,7 @@ cars
 plot(cars)
 ```
 
-How can we make this with `ggplot`?
-This is an add-on package and I first need to install it on my computer. This install is to a one time only deal. 
-To install packages use `install.packages()` function.
-To use it we need to load up the package from our library use `library()`
+How can we make this with `ggplot`? This is an add-on package and I first need to install it on my computer. This install is to a one time only deal. To install packages use `install.packages()` function. To use it we need to load up the package from our library use `library()`
 
 ```{r}
 #do it in console
@@ -29,11 +27,7 @@ ggplot(cars)+
   geom_point()
 ```
 
-Using ggplot is not as straightforward as base R plot for basic plots. I have some more typing to do.
-Every ggplot has at least 3 things (layers):
--data (data.frame)
--aes (how the data map to the plot)
--geoms (think of this as the type of plot, e.g. points, lines ...etc)
+Using ggplot is not as straightforward as base R plot for basic plots. I have some more typing to do. Every ggplot has at least 3 things (layers): -data (data.frame) -aes (how the data map to the plot) -geoms (think of this as the type of plot, e.g. points, lines ...etc)
 
 Here ggplot is verbose- i.e. U had more typing to do.However, I can add more layers.
 
@@ -50,6 +44,7 @@ ggplot(cars)+
        caption="Dataset: 'cars'")+
   theme_bw()
 ```
+
 ```{r}
 p <- ggplot(cars)+
   aes(speed, dist)+
@@ -61,9 +56,6 @@ p <- ggplot(cars)+
 library(patchwork)
 (p | p)/p
 ```
-
-
-
 
 ```{r}
 url <- "https://bioboot.github.io/bimm143_S20/class-material/up_down_expression.txt"
@@ -86,15 +78,12 @@ round((table(genes$State)/nrow(genes))*100, 2)
 
 ```
 
-
-
 ```{r}
 ggplot(genes)+
   #if you want ur color depends on your data, u have to argue the color at aes, instead of geom_point.
   aes(x = Condition1, y = Condition2, col = State)+
   geom_point()
 ```
-
 
 ```{r}
 p <- ggplot(genes)+
@@ -110,29 +99,37 @@ p2
 
 ```
 
-
 There is an interactive version wotj `plotly` so that you can pinpoint any point on the figure.
 
 ```{r}
 library(plotly)
  #ggplotly(p2)
 ```
+
 When library(plotly), there are some messages says:
 
 Attaching package: ‘plotly’
 
 The following object is masked from ‘package:ggplot2’:
 
-    last_plot
+```         
+last_plot
+```
 
 The following object is masked from ‘package:stats’:
 
-    filter
+```         
+filter
+```
 
 The following object is masked from ‘package:graphics’:
 
-    layout
-In this case, 
+```         
+layout
+```
+
+In this case,
+
 ```{r}
 #| message: false
 
@@ -140,7 +137,6 @@ In this case,
 
 library(plotly)
 ```
-
 
 ```{r}
 url <- "https://raw.githubusercontent.com/jennybc/gapminder/master/inst/extdata/gapminder.tsv"
@@ -155,9 +151,6 @@ ggplot(gapminder_2007)+
   scale_size_area(max_size = 10)
 ```
 
-
-
-
 ```{r}
 gapminder_top5 <- gapminder %>% filter(year==2007) %>% arrange(desc(pop)) %>%
   top_n(5, pop)
@@ -168,15 +161,11 @@ ggplot(gapminder_top5) +
 
 ```
 
-
 ```{r}
 ggplot(gapminder_top5)+
   geom_col(aes(x=reorder(country, -pop),y=pop, fill=gdpPercap))
 ```
 
-
 ```{r}
 
 ```
-
-
